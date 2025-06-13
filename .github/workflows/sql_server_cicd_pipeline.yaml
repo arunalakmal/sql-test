@@ -32,9 +32,9 @@ jobs:
       - name: Wait for SQL Server to be ready
         run: sleep 20
 
-  #     - name: Setup schema and load test data
-  #       run: |
-  #         /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -d master -i tests/test_data.sql
+      - name: Setup schema and load test data
+        run: |
+          /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -d master -i tests/test_data.sql
 
   #     - name: Apply stored procedure changes
   #       run: |
