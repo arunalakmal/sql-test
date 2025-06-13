@@ -29,8 +29,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-  #     - name: Wait for SQL Server to be ready
-  #       run: sleep 20
+      - name: Wait for SQL Server to be ready
+        run: sleep 20
 
   #     - name: Setup schema and load test data
   #       run: |
