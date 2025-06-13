@@ -36,10 +36,15 @@ jobs:
         id: sql_container
         run: echo "container_id=$(docker ps -q --filter ancestor=mcr.microsoft.com/mssql/server:2022-latest)" >> $GITHUB_OUTPUT
 
-      - name: Setup schema and load test data
+      - name: Copy SQL files into container
         run: |
-          docker exec ${{ steps.sql_container.outputs.container_id }} /opt/mssql-tools18/bin/sqlcmd \
-            -S localhost -U SA -P 'YourStrong!Passw0rd' -d master -i /work/tests/test_data.sql
+          docker cp tests/test_data.sql ${{ steps.sql_container.outputs.container_id }}:/test_data.sql
+          docker cp tests/test_validation.sql ${{ steps.sql_container.outputs.container_id }}:/test_validation.sql
+          for file in sql/stored_procedures/*.sql; do
+            docker cp "$file" ${{ steps.sql_container.outputs.container_id }}:/$(basename "$file")
+          done
+
+      
 
       # - name: Setup schema and load test data
       #   run: |
