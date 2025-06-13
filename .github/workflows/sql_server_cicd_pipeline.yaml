@@ -87,38 +87,3 @@ jobs:
           for file in sql/stored_procedures/*.sql; do
             sqlcmd -S ${{ secrets.PROD_SQL_SERVER }} -U ${{ secrets.PROD_SQL_USER }} -P ${{ secrets.PROD_SQL_PASSWORD }} -d ${{ secrets.PROD_SQL_DB }} -i "$file"
           done
-
-# Project directory structure and sample files:
-
-# sql/stored_procedures/usp_GetCustomer.sql
--- Create stored procedure to get customer info
-CREATE OR ALTER PROCEDURE usp_GetCustomer @CustomerId INT
-AS
-BEGIN
-    SELECT * FROM Customers WHERE CustomerId = @CustomerId;
-END;
-
-# sql/stored_procedures/usp_AddCustomer.sql
--- Create stored procedure to add a customer
-CREATE OR ALTER PROCEDURE usp_AddCustomer @Name NVARCHAR(100), @Email NVARCHAR(100)
-AS
-BEGIN
-    INSERT INTO Customers (Name, Email) VALUES (@Name, @Email);
-END;
-
-# tests/test_data.sql
--- Create schema and insert test data
-CREATE TABLE Customers (
-    CustomerId INT IDENTITY(1,1) PRIMARY KEY,
-    Name NVARCHAR(100),
-    Email NVARCHAR(100)
-);
-
-INSERT INTO Customers (Name, Email) VALUES ('Alice Smith', 'alice@example.com');
-INSERT INTO Customers (Name, Email) VALUES ('Bob Jones', 'bob@example.com');
-
-# tests/test_validation.sql
--- Validate that data and stored procs behave as expected
-EXEC usp_GetCustomer @CustomerId = 1;
-EXEC usp_AddCustomer @Name = 'Charlie Brown', @Email = 'charlie@example.com';
-SELECT * FROM Customers WHERE Email = 'charlie@example.com';
