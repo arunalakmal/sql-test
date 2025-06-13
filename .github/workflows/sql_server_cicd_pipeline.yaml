@@ -29,61 +29,61 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Wait for SQL Server to be ready
-        run: sleep 20
+  #     - name: Wait for SQL Server to be ready
+  #       run: sleep 20
 
-      - name: Setup schema and load test data
-        run: |
-          /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -d master -i tests/test_data.sql
+  #     - name: Setup schema and load test data
+  #       run: |
+  #         /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -d master -i tests/test_data.sql
 
-      - name: Apply stored procedure changes
-        run: |
-          for file in sql/stored_procedures/*.sql; do
-            /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -d master -i "$file"
-          done
+  #     - name: Apply stored procedure changes
+  #       run: |
+  #         for file in sql/stored_procedures/*.sql; do
+  #           /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -d master -i "$file"
+  #         done
 
-      - name: Run validation queries
-        run: |
-          /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -d master -i tests/test_validation.sql
+  #     - name: Run validation queries
+  #       run: |
+  #         /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -d master -i tests/test_validation.sql
 
-  deploy-dev:
-    runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/main'
+  # deploy-dev:
+  #   runs-on: ubuntu-latest
+  #   needs: test
+  #   if: github.ref == 'refs/heads/main'
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #     - name: Azure Login
+  #       uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy stored procedures to Dev DB
-        run: |
-          for file in sql/stored_procedures/*.sql; do
-            sqlcmd -S ${{ secrets.DEV_SQL_SERVER }} -U ${{ secrets.DEV_SQL_USER }} -P ${{ secrets.DEV_SQL_PASSWORD }} -d ${{ secrets.DEV_SQL_DB }} -i "$file"
-          done
+  #     - name: Deploy stored procedures to Dev DB
+  #       run: |
+  #         for file in sql/stored_procedures/*.sql; do
+  #           sqlcmd -S ${{ secrets.DEV_SQL_SERVER }} -U ${{ secrets.DEV_SQL_USER }} -P ${{ secrets.DEV_SQL_PASSWORD }} -d ${{ secrets.DEV_SQL_DB }} -i "$file"
+  #         done
 
-  deploy-prod:
-    runs-on: ubuntu-latest
-    needs: deploy-dev
-    environment:
-      name: production
-      url: https://your-prod-environment-url
+  # deploy-prod:
+  #   runs-on: ubuntu-latest
+  #   needs: deploy-dev
+  #   environment:
+  #     name: production
+  #     url: https://your-prod-environment-url
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #     - name: Azure Login
+  #       uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy stored procedures to Prod DB
-        run: |
-          for file in sql/stored_procedures/*.sql; do
-            sqlcmd -S ${{ secrets.PROD_SQL_SERVER }} -U ${{ secrets.PROD_SQL_USER }} -P ${{ secrets.PROD_SQL_PASSWORD }} -d ${{ secrets.PROD_SQL_DB }} -i "$file"
-          done
+  #     - name: Deploy stored procedures to Prod DB
+  #       run: |
+  #         for file in sql/stored_procedures/*.sql; do
+  #           sqlcmd -S ${{ secrets.PROD_SQL_SERVER }} -U ${{ secrets.PROD_SQL_USER }} -P ${{ secrets.PROD_SQL_PASSWORD }} -d ${{ secrets.PROD_SQL_DB }} -i "$file"
+  #         done
