@@ -1,0 +1,124 @@
+name: SQL Server CI/CD Pipeline
+
+on:
+  pull_request:
+    paths:
+      - 'sql/stored_procedures/**'
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      sql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          SA_PASSWORD: "YourStrong!Passw0rd"
+          ACCEPT_EULA: "Y"
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P YourStrong!Passw0rd -Q 'SELECT 1'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Wait for SQL Server to be ready
+        run: sleep 20
+
+      - name: Setup schema and load test data
+        run: |
+          /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -d master -i tests/test_data.sql
+
+      - name: Apply stored procedure changes
+        run: |
+          for file in sql/stored_procedures/*.sql; do
+            /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -d master -i "$file"
+          done
+
+      - name: Run validation queries
+        run: |
+          /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -d master -i tests/test_validation.sql
+
+  deploy-dev:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy stored procedures to Dev DB
+        run: |
+          for file in sql/stored_procedures/*.sql; do
+            sqlcmd -S ${{ secrets.DEV_SQL_SERVER }} -U ${{ secrets.DEV_SQL_USER }} -P ${{ secrets.DEV_SQL_PASSWORD }} -d ${{ secrets.DEV_SQL_DB }} -i "$file"
+          done
+
+  deploy-prod:
+    runs-on: ubuntu-latest
+    needs: deploy-dev
+    environment:
+      name: production
+      url: https://your-prod-environment-url
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy stored procedures to Prod DB
+        run: |
+          for file in sql/stored_procedures/*.sql; do
+            sqlcmd -S ${{ secrets.PROD_SQL_SERVER }} -U ${{ secrets.PROD_SQL_USER }} -P ${{ secrets.PROD_SQL_PASSWORD }} -d ${{ secrets.PROD_SQL_DB }} -i "$file"
+          done
+
+# Project directory structure and sample files:
+
+# sql/stored_procedures/usp_GetCustomer.sql
+-- Create stored procedure to get customer info
+CREATE OR ALTER PROCEDURE usp_GetCustomer @CustomerId INT
+AS
+BEGIN
+    SELECT * FROM Customers WHERE CustomerId = @CustomerId;
+END;
+
+# sql/stored_procedures/usp_AddCustomer.sql
+-- Create stored procedure to add a customer
+CREATE OR ALTER PROCEDURE usp_AddCustomer @Name NVARCHAR(100), @Email NVARCHAR(100)
+AS
+BEGIN
+    INSERT INTO Customers (Name, Email) VALUES (@Name, @Email);
+END;
+
+# tests/test_data.sql
+-- Create schema and insert test data
+CREATE TABLE Customers (
+    CustomerId INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(100),
+    Email NVARCHAR(100)
+);
+
+INSERT INTO Customers (Name, Email) VALUES ('Alice Smith', 'alice@example.com');
+INSERT INTO Customers (Name, Email) VALUES ('Bob Jones', 'bob@example.com');
+
+# tests/test_validation.sql
+-- Validate that data and stored procs behave as expected
+EXEC usp_GetCustomer @CustomerId = 1;
+EXEC usp_AddCustomer @Name = 'Charlie Brown', @Email = 'charlie@example.com';
+SELECT * FROM Customers WHERE Email = 'charlie@example.com';
