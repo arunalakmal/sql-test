@@ -38,7 +38,7 @@ jobs:
 
       - name: Setup schema and load test data
         run: |
-          docker exec ${{ steps.sql_container.outputs.container_id }} /opt/mssql-tools/bin/sqlcmd \
+          docker exec ${{ steps.sql_container.outputs.container_id }} /opt/mssql-tools18/bin/sqlcmd \
             -S localhost -U SA -P 'YourStrong!Passw0rd' -d master -i /tests/test_data.sql
 
       # - name: Setup schema and load test data
