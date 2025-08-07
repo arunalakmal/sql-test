@@ -18,7 +18,7 @@ jobs:
           
       - name: Perform a SQL Database copy for feature testing
         run: |
-          echo "Copying database for feature testing..."
+          echo "Copying database for feature testing...!!!"
           FULL_NAME="${{ github.ref }}"
           CLEAN_NAME=$(echo "$FULL_NAME" | sed 's|refs/heads/||' | tr '/' '-')
           CLEAN_NAME=$(echo "$CLEAN_NAME" | tr '/_' '-')
