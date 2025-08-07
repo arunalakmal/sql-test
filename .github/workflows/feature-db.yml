@@ -18,7 +18,7 @@ jobs:
           
       - name: Perform a SQL Database copy for feature testing
         run: |
-          az sql db copy --dest-name ${{ vars.DB_NAME }}-copy \
+          az sql db copy --dest-name ${{ vars.DB_NAME }}-${{ github.ref_name | lower | replace('/', '-') }} \
             --name ${{ vars.DB_NAME }} \
             --resource-group ${{ vars.RESOURCE_GROUP }} \
             --server ${{ vars.SERVER }} \
