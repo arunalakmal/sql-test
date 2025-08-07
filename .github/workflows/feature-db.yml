@@ -1,0 +1,31 @@
+name: Feature Testing the Database server
+on:
+  push:
+    branches:
+      - feature/*
+jobs: 
+  execute_feature:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate with Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Perform a SQL Database copy for feature testing
+        run: |
+          az sql db copy --dest-name ${{ vars.DB_NAME }}-${GITHUB_REF} \
+            --name ${{ vars.DB_NAME }} \
+            --resource-group ${{ vars.RESOURCE_GROUP }} \
+            --server ${{ vars.SERVER }} \
+            --dest-resource-group ${{ vars.RESOURCE_GROUP }} \
+            --dest-server ${{ vars.SERVER }}
+      - name: Database copy Success
+        run: echo "Database copy for feature testing completed successfully."
+        
+      - name: Notify failure
+        if: failure()
+        run: echo "Some feature tests failed. Please check the logs."
