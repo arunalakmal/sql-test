@@ -5,6 +5,7 @@ on:
       - feature/*
 jobs: 
   execute_feature:
+    environment: nonprod
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
