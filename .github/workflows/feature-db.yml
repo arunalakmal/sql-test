@@ -18,7 +18,13 @@ jobs:
           
       - name: Perform a SQL Database copy for feature testing
         run: |
-          az sql db copy --dest-name ${{ vars.DB_NAME }}-${{ github.ref }} \
+          Echo "Copying database for feature testing..."
+          FULL_NAME="${{ github.ref }}"
+          CLEAN_NAME=$(echo "$FULL_NAME" | sed 's|refs/heads/||' | tr '/' '-')
+          CLEAN_NAME=$(echo "$CLEAN_NAME" | tr '/_' '-')
+          SUFFIX=$(echo "$CLEAN_NAME" | cut -c1-10)
+          echo "SUFFIX=$SUFFIX" >> $GITHUB_ENV
+          az sql db copy --dest-name ${{ vars.DB_NAME }}-${SUFFIX} \
             --name ${{ vars.DB_NAME }} \
             --resource-group ${{ vars.RESOURCE_GROUP }} \
             --server ${{ vars.SERVER }} \
