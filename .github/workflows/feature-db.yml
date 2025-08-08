@@ -18,7 +18,7 @@ jobs:
           
       - name: Perform a SQL Database copy for feature testing
         run: |
-          ./scripts/clone-db.sh -g ${{ vars.RESOURCE_GROUP }} -n ${{ vars.SERVER }} -b ${{ vars.DB_NAME }} -e ${{ vars.SERVER }} -d false
+          ./scripts/clone-db.sh -g ${{ vars.RESOURCE_GROUP }} -n ${{ vars.SERVER }} -b ${{ vars.DB_NAME }} -e ${{ vars.SERVER }} -i "${{ github.ref }}" -d false
         # run: |
         #   echo "Copying database for feature testing...!!!"
         #   FULL_NAME="${{ github.ref }}"

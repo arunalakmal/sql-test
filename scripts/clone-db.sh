@@ -37,7 +37,7 @@ clone_database() {
     else
         log "INFO" "Executing database clonning process..."
 
-        FULL_NAME="${{ github.ref }}"
+        FULL_NAME=${SUFFIX}
         CLEAN_NAME=$(echo "$FULL_NAME" | sed 's|refs/heads/||' | tr '/' '-')
         CLEAN_NAME=$(echo "$CLEAN_NAME" | tr '/_' '-')
         SUFFIX=$(echo "$CLEAN_NAME" | cut -c1-10)
@@ -81,6 +81,10 @@ while [[ $# -gt 0 ]]; do
             DEST_DB_NAME="$2"
             shift 2
             ;;
+        -i|--suffix)
+            SUFFIX="$2"
+            shift 2
+            ;;
         -d|--dry-run)
             DRY_RUN="$2"
             shift 2
@@ -96,7 +100,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Validate required parameters
-if [[ -z "${RESOURCE_GROUP:-}" || -z "${SERVER_NAME:-}" || -z "${SOURCE_DB_NAME:-}" ]]; then
+if [[ -z "${RESOURCE_GROUP:-}" || -z "${SERVER_NAME:-}" || -z "${SOURCE_DB_NAME:-}" || -z "${SUFFIX:-}" ]]; then
     echo "Error: Missing required parameters"
     usage
 fi
