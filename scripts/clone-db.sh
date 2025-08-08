@@ -9,12 +9,12 @@ DRY_RUN="true"
 usage() {
     echo "Usage: $0 [OPTIONS]"
     echo "Options:"
+    echo "  -f, --function OPERATION Create|Delete   Azure subscription ID)"
     echo "  -s, --subscription-id SUBSCRIPTION_ID    Azure subscription ID"
     echo "  -g, --resource-group RESOURCE_GROUP      Resource group name"
     echo "  -n, --server-name SERVER_NAME            SQL server name"
     echo "  -b, --source-db SOURCE_DB_NAME           Source database name"
-    echo "  -e, --dest-server DEST_SERVER_NAME       Detination Server Name"
-    echo "  -f, --dest-db DEST_DB_NAME               Destination database name"
+    echo "  -i, --suffix DB CLONE SUFFIX             Detination Server Name"
     echo "  -d, --dry-run true|false                 Dry run mode (default: $DRY_RUN)"
     echo "  -h, --help                               Show this help message"
     exit 1
@@ -62,6 +62,10 @@ clone_database() {
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
+        -f|--function)
+            OPERATION="$2"
+            shift 2
+            ;;
         -s|--subscription-id)
             SUBSCRIPTION_ID="$2"
             shift 2
@@ -76,14 +80,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         -b|--source-db)
             SOURCE_DB_NAME="$2"
-            shift 2
-            ;;
-        -e|--dest-server)
-            DEST_SERVER_NAME="$2"
-            shift 2
-            ;;
-        -f|--dest-db)
-            DEST_DB_NAME="$2"
             shift 2
             ;;
         -i|--suffix)
@@ -105,9 +101,17 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Validate required parameters
-if [[ -z "${RESOURCE_GROUP:-}" || -z "${SERVER_NAME:-}" || -z "${SOURCE_DB_NAME:-}" || -z "${SUFFIX:-}" ]]; then
+if [[ -z "${OPERATION:-}" || -z "${RESOURCE_GROUP:-}" || -z "${SERVER_NAME:-}" || -z "${SOURCE_DB_NAME:-}" || -z "${SUFFIX:-}" ]]; then
     echo "Error: Missing required parameters"
     usage
 fi
 
-clone_database
+if [[ "$OPERATION" == "Create" ]]; then
+    clone_database
+elif [[ "$OPERATION" == "Delete" ]]; then
+    log "INFO" "This script does not support deletion operations yet."
+    exit 1
+else 
+    echo "Error: Invalid operation '$OPERATION'. Use 'Create' or 'Delete'."
+    exit 1
+fi
