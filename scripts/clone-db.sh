@@ -32,14 +32,15 @@ log() {
 construct_suffix() {
     FULL_NAME=${SUFFIX}
     CLEAN_NAME=$(echo "$FULL_NAME" | sed 's|refs/heads/||' | tr '/' '-')
-    CLEAN_NAME=$(echo "$CLEAN_NAME" | tr '/_' '-')
-    SUFFIX=$(echo "$CLEAN_NAME" | cut -c1-10)
+    CLEAN_NAME=$(echo "$CLEAN_NAME" | tr '/_' '-' | tr '[:upper:]' '[:lower:]')
+    SUFFIX=$(echo "$CLEAN_NAME" | cut -c1-20)
     echo "SUFFIX=$SUFFIX" >> $GITHUB_ENV
 }
 
 clone_database() {
-
-    log "INFO" "Cloning database ${SOURCE_DB_NAME}"
+    construct_suffix
+    
+    log "INFO" "Cloning database ${SOURCE_DB_NAME} to ${SOURCE_DB_NAME}-${SUFFIX} on server ${SERVER_NAME}"
 
     if [[ "$DRY_RUN" == "true" ]]; then
         log "INFO" "Dry run mode enabled. No changes will be made this time, without DRY RUN mode database ${SOURCE_DB_NAME} will be cloned."
@@ -47,8 +48,6 @@ clone_database() {
     else
         log "INFO" "Executing database clonning process..."
         log "INFO" "Please wait! this process will take a while..."
-
-        construct_suffix
 
         az sql db copy --dest-name ${SOURCE_DB_NAME}-${SUFFIX} \
         --name ${SOURCE_DB_NAME} \
