@@ -137,8 +137,8 @@ fi
 if [[ "$OPERATION" == "Create" ]]; then
     clone_database
 elif [[ "$OPERATION" == "Delete" ]]; then
-    delete_clone()
-else 
+    delete_clone
+else
     echo "Error: Invalid operation '$OPERATION'. Use 'Create' or 'Delete'."
     exit 1
 fi
