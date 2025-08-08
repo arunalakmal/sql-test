@@ -27,6 +27,14 @@ log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] [$level] $*"
 }
 
+construct_suffix() {
+    FULL_NAME=${SUFFIX}
+    CLEAN_NAME=$(echo "$FULL_NAME" | sed 's|refs/heads/||' | tr '/' '-')
+    CLEAN_NAME=$(echo "$CLEAN_NAME" | tr '/_' '-')
+    SUFFIX=$(echo "$CLEAN_NAME" | cut -c1-10)
+    echo "SUFFIX=$SUFFIX" >> $GITHUB_ENV
+}
+
 clone_database() {
 
     log "INFO" "Cloning database ${SOURCE_DB_NAME}"
@@ -38,11 +46,7 @@ clone_database() {
         log "INFO" "Executing database clonning process..."
         log "INFO" "Please wait! this process will take a while..."
 
-        FULL_NAME=${SUFFIX}
-        CLEAN_NAME=$(echo "$FULL_NAME" | sed 's|refs/heads/||' | tr '/' '-')
-        CLEAN_NAME=$(echo "$CLEAN_NAME" | tr '/_' '-')
-        SUFFIX=$(echo "$CLEAN_NAME" | cut -c1-10)
-        echo "SUFFIX=$SUFFIX" >> $GITHUB_ENV
+        construct_suffix
 
         az sql db copy --dest-name ${SOURCE_DB_NAME}-${SUFFIX} \
         --name ${SOURCE_DB_NAME} \
