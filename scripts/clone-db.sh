@@ -134,11 +134,11 @@ if [[ -z "${OPERATION:-}" || -z "${RESOURCE_GROUP:-}" || -z "${SERVER_NAME:-}" |
     usage
 fi
 
-if [[ "$OPERATION" == "Create" ]]; then
+if [[ "$OPERATION" == "create" ]]; then
     clone_database
-elif [[ "$OPERATION" == "Delete" ]]; then
+elif [[ "$OPERATION" == "delete" ]]; then
     delete_clone
 else
-    echo "Error: Invalid operation '$OPERATION'. Use 'Create' or 'Delete'."
+    echo "Error: Invalid operation '$OPERATION'. Use 'create' or 'delete'."
     exit 1
 fi
