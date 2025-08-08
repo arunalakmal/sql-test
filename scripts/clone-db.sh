@@ -32,7 +32,7 @@ log() {
 construct_suffix() {
     FULL_NAME=${SUFFIX}
     CLEAN_NAME=$(echo "$FULL_NAME" | sed 's|refs/heads/||' | tr '/' '-')
-    CLEAN_NAME=$(echo "$CLEAN_NAME" | tr '/_' '-')
+    CLEAN_NAME=$(echo "$CLEAN_NAME" | tr '/_' '-' | tr '[:upper:]' '[:lower:]')
     SUFFIX=$(echo "$CLEAN_NAME" | cut -c1-20)
     echo "SUFFIX=$SUFFIX" >> $GITHUB_ENV
 }
