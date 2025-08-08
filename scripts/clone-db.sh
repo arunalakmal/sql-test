@@ -14,6 +14,8 @@ usage() {
     echo "  -g, --resource-group RESOURCE_GROUP      Resource group name"
     echo "  -n, --server-name SERVER_NAME            SQL server name"
     echo "  -b, --source-db SOURCE_DB_NAME           Source database name"
+    echo "  -e, --dest-server DEST_SERVER_NAME       Detination Server Name"
+    echo "  -c, --dest-db DEST_DB_NAME               Destination database name"
     echo "  -i, --suffix DB CLONE SUFFIX             Detination Server Name"
     echo "  -d, --dry-run true|false                 Dry run mode (default: $DRY_RUN)"
     echo "  -h, --help                               Show this help message"
@@ -59,6 +61,24 @@ clone_database() {
     fi
 }
 
+delete_clone() {
+    log "INFO" "Deleting cloned database ${SOURCE_DB_NAME}-${SUFFIX}"
+
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log "INFO" "Dry run mode enabled. No changes will be made this time, without DRY RUN mode database ${SOURCE_DB_NAME}-${SUFFIX} will be deleted."
+        return
+    else
+        log "INFO" "Executing database deletion process..."
+        log "INFO" "Please wait! this process will take a while..."
+
+        az sql db delete --name ${SOURCE_DB_NAME}-${SUFFIX} \
+        --resource-group ${RESOURCE_GROUP} \
+        --server ${SERVER_NAME} --yes > /dev/null 2>&1
+
+        log "INFO" "Database ${SOURCE_DB_NAME}-${SUFFIX} deleted from server ${SERVER_NAME}."
+    fi
+}
+
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -80,6 +100,14 @@ while [[ $# -gt 0 ]]; do
             ;;
         -b|--source-db)
             SOURCE_DB_NAME="$2"
+            shift 2
+            ;;
+        -e|--dest-server)
+            DEST_SERVER_NAME="$2"
+            shift 2
+            ;;
+        -c|--dest-db)
+            DEST_DB_NAME="$2"
             shift 2
             ;;
         -i|--suffix)
@@ -109,8 +137,7 @@ fi
 if [[ "$OPERATION" == "Create" ]]; then
     clone_database
 elif [[ "$OPERATION" == "Delete" ]]; then
-    log "INFO" "This script does not support deletion operations yet."
-    exit 1
+    delete_clone()
 else 
     echo "Error: Invalid operation '$OPERATION'. Use 'Create' or 'Delete'."
     exit 1
