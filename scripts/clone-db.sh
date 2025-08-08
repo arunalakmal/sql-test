@@ -36,6 +36,7 @@ clone_database() {
         return
     else
         log "INFO" "Executing database clonning process..."
+        log "INFO" "Please wait! this process will take a while..."
 
         FULL_NAME=${SUFFIX}
         CLEAN_NAME=$(echo "$FULL_NAME" | sed 's|refs/heads/||' | tr '/' '-')
@@ -48,7 +49,7 @@ clone_database() {
         --resource-group ${RESOURCE_GROUP} \
         --server ${SERVER_NAME} \
         --dest-resource-group ${RESOURCE_GROUP} \
-        --dest-server ${SERVER_NAME}
+        --dest-server ${SERVER_NAME} > /dev/null 2>&1
 
         log "INFO" "Database ${SOURCE_DB_NAME} cloned to ${SOURCE_DB_NAME}-${SUFFIX} on server ${SERVER_NAME}."
     fi
