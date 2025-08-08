@@ -62,6 +62,7 @@ clone_database() {
 }
 
 delete_clone() {
+    construct_suffix
     log "INFO" "Deleting cloned database ${SOURCE_DB_NAME}-${SUFFIX}"
 
     if [[ "$DRY_RUN" == "true" ]]; then
@@ -70,7 +71,7 @@ delete_clone() {
     else
         log "INFO" "Executing database deletion process..."
         log "INFO" "Please wait! this process will take a while..."
-        construct_suffix
+        
         az sql db delete --name ${SOURCE_DB_NAME}-${SUFFIX} \
         --resource-group ${RESOURCE_GROUP} \
         --server ${SERVER_NAME} --yes > /dev/null 2>&1
