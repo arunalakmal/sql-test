@@ -1,0 +1,24 @@
+# config/allowed-databases.yml
+# YAML format configuration file
+# List of databases that should be kept (all others will be deleted)
+
+databases:
+  - "production-app-db"
+  - "staging-app-db"
+  - "development-app-db"
+  - "test-automation-db"
+  - "reporting-db"
+  - "analytics-warehouse"
+  - "user-session-db"
+
+# Optional: Add metadata for documentation
+metadata:
+  description: "Allowed databases for MyApp SQL Server"
+  last_updated: "2024-08-08"
+  owner: "Database Team"
+  environment: "production"
+
+# Alternative simple array format (also supported):
+# - "production-app-db"
+# - "staging-app-db"
+# - "development-app-db"
