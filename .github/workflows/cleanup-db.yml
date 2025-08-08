@@ -1,0 +1,30 @@
+name: Cleanup Feature Database
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  cleanup_feature_db:
+    if: github.event.pull_request.merged == true || ${{ github.event.pull_request.closed }}
+    environment: nonprod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate with Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Cleanup SQL Database for feature testing
+        run: |
+          ./scripts/clone-db.sh -f delete -g ${{ vars.RESOURCE_GROUP }} -n ${{ vars.SERVER }} -b ${{ vars.DB_NAME }} -e ${{ vars.SERVER }} -i "${{ github.event.pull_request.head.ref }}" -d false
+          
+      - name: Cleanup Success
+        run: echo "Cleanup of feature database completed successfully."
+        
+      - name: Notify failure
+        if: failure()
+        run: echo "Some cleanup tasks failed. Please check the logs."
