@@ -20,9 +20,6 @@ jobs:
         run: |
           ./scripts/clone-db.sh -f create -g ${{ vars.RESOURCE_GROUP }} -n ${{ vars.SERVER }} -b ${{ vars.DB_NAME }} -e ${{ vars.SERVER }} -i "${{ github.ref }}" -d false
 
-      - name: Database copy Success
-        run: echo "Database copy for feature testing completed successfully."
-
       - name: Setup Connection String
         run: |
             UPDATED_CONN_STR=$(echo "${{ secrets.AZURE_SQL_CONNECTION_STRING }}" | sed -E "s/(Initial Catalog=)[^;]+/\1${FULL_DB_NAME}/")
