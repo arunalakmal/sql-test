@@ -43,7 +43,7 @@ clone_database() {
     log "INFO" "Cloning database ${SOURCE_DB_NAME} to ${SOURCE_DB_NAME}-${SUFFIX} on server ${SERVER_NAME}"
 
     if [[ "$DRY_RUN" == "true" ]]; then
-        log "INFO" "Dry run mode enabled. No changes will be made this time, without DRY RUN mode database ${SOURCE_DB_NAME} will be cloned succefully."
+        log "INFO" "Dry run mode enabled. No changes will be made this time, without DRY RUN mode database ${SOURCE_DB_NAME} will be cloned."
         return
     else
         log "INFO" "Executing database clonning process..."
@@ -56,7 +56,7 @@ clone_database() {
         --dest-resource-group ${RESOURCE_GROUP} \
         --dest-server ${SERVER_NAME} > /dev/null 2>&1
 
-        log "INFO" "Database ${SOURCE_DB_NAME} cloned to ${SOURCE_DB_NAME}-${SUFFIX} on server ${SERVER_NAME}."
+        log "INFO" "Database ${SOURCE_DB_NAME} cloned to ${SOURCE_DB_NAME}-${SUFFIX} on server ${SERVER_NAME} successfully."
     fi
 }
 
