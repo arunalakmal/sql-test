@@ -43,7 +43,7 @@ clone_database() {
     log "INFO" "Cloning database ${SOURCE_DB_NAME} to ${SOURCE_DB_NAME}-${SUFFIX} on server ${SERVER_NAME}"
 
     if [[ "$DRY_RUN" == "true" ]]; then
-        log "INFO" "Dry run mode enabled. No changes will be made this time, without DRY RUN mode database ${SOURCE_DB_NAME} will be cloned."
+        log "INFO" "Dry run mode enabled. No changes will be made this time, without DRY RUN mode database ${SOURCE_DB_NAME} will be cloned succefully."
         return
     else
         log "INFO" "Executing database clonning process..."
