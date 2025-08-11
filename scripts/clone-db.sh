@@ -37,7 +37,7 @@ construct_suffix() {
     echo "SUFFIX=$SUFFIX" >> $GITHUB_ENV
     FULL_DB_NAME=${SOURCE_DB_NAME}-${SUFFIX}
     echo "FULL_DB_NAME=${FULL_DB_NAME}" >> $GITHUB_ENV
-    echo "DB name constructed ${FULL_DN_NAME}"
+    echo "DB name constructed ${FULL_DB_NAME}"
     log "INFO" "DB Name constructed: ${FULL_DB_NAME:-}"
 }
 
