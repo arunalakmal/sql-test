@@ -41,7 +41,7 @@ jobs:
                 cat "$f"
                 echo "-- End of $f"
                 echo "" 
-            done > combined.sql
+            done > stored_procedures/combined.sql
 
       - name: Execute SQL Scripts
         uses: azure/sql-action@v2.3
