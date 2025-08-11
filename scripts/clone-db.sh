@@ -56,7 +56,7 @@ clone_database() {
         --dest-resource-group ${RESOURCE_GROUP} \
         --dest-server ${SERVER_NAME} > /dev/null 2>&1
 
-        log "INFO" "Database ${SOURCE_DB_NAME} cloned to ${SOURCE_DB_NAME}-${SUFFIX} on server ${SERVER_NAME}."
+        log "INFO" "Database ${SOURCE_DB_NAME} cloned to ${SOURCE_DB_NAME}-${SUFFIX} on server ${SERVER_NAME} successfully."
     fi
 }
 
