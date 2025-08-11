@@ -19,21 +19,14 @@ jobs:
       - name: Perform a SQL Database copy for feature testing
         run: |
           ./scripts/clone-db.sh -f create -g ${{ vars.RESOURCE_GROUP }} -n ${{ vars.SERVER }} -b ${{ vars.DB_NAME }} -e ${{ vars.SERVER }} -i "${{ github.ref }}" -d false
-        # run: |
-        #   echo "Copying database for feature testing...!!!"
-        #   FULL_NAME="${{ github.ref }}"
-        #   CLEAN_NAME=$(echo "$FULL_NAME" | sed 's|refs/heads/||' | tr '/' '-')
-        #   CLEAN_NAME=$(echo "$CLEAN_NAME" | tr '/_' '-')
-        #   SUFFIX=$(echo "$CLEAN_NAME" | cut -c1-10)
-        #   echo "SUFFIX=$SUFFIX" >> $GITHUB_ENV
-        #   az sql db copy --dest-name ${{ vars.DB_NAME }}-${SUFFIX} \
-        #     --name ${{ vars.DB_NAME }} \
-        #     --resource-group ${{ vars.RESOURCE_GROUP }} \
-        #     --server ${{ vars.SERVER }} \
-        #     --dest-resource-group ${{ vars.RESOURCE_GROUP }} \
-        #     --dest-server ${{ vars.SERVER }}
+
       - name: Database copy Success
         run: echo "Database copy for feature testing completed successfully."
+
+      - name: Setup Connection String
+        run: |
+            UPDATED_CONN_STR=$(echo ${{ secrets.AZURE_SQL_CONNECTION_STRING }} | sed -E "s/(Initial Catalog=)[^;]+/\1${{ vars.DB_NAME }}-${SUFFIX}/")
+            echo "UPDATED_CONN_STR=$UPDATED_CONN_STR" >> $GITHUB_ENV
 
       - name: Execute SQL Scripts
         run: |
@@ -45,7 +38,7 @@ jobs:
       - name: Execute SQL Scripts
         uses: azure/sql-action@v2.3
         with:        
-            connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+            connection-string: ${UPDATED_CONN_STR}
             path: './stored_procedures/combined.sql'
             skip-firewall-check: true
         
