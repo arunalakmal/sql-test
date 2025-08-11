@@ -34,12 +34,13 @@ jobs:
         #     --dest-server ${{ vars.SERVER }}
       - name: Database copy Success
         run: echo "Database copy for feature testing completed successfully."
+
+      - uses: azure/sql-action@v2.3
+        with:        
+            connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+            path: './stored_procedures/*.sql'
         
       - name: Notify failure
         if: failure()
         run: echo "Some feature tests failed. Please check the logs."
     
-      - uses: azure/sql-action@v2.3
-        with:        
-            connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
-            path: './stored_procedures/*.sql'
