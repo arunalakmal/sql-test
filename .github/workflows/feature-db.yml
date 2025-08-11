@@ -37,7 +37,7 @@ jobs:
 
       - name: Execute SQL Scripts
         run: |
-            cat stored_procedures/*.sql > combined.sql
+            cat stored_procedures/*.sql > stored_procedures/combined.sql
 
       - name: Execute SQL Scripts
         uses: azure/sql-action@v2.3
