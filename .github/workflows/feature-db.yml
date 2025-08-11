@@ -38,7 +38,7 @@ jobs:
       - name: Execute SQL Scripts
         uses: azure/sql-action@v2.3
         with:        
-            connection-string: ${UPDATED_CONN_STR}
+            connection-string: ${{ secrets }}}
             path: './stored_procedures/combined.sql'
             skip-firewall-check: true
         
