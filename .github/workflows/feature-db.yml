@@ -36,10 +36,14 @@ jobs:
         run: echo "Database copy for feature testing completed successfully."
 
       - name: Execute SQL Scripts
+        run: |
+            cat stored_procedures/*.sql > combined.sql
+
+      - name: Execute SQL Scripts
         uses: azure/sql-action@v2.3
         with:        
             connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
-            path: './stored_procedures/*.sql'
+            path: './stored_procedures/combined.sql'
             skip-firewall-check: true
         
       - name: Notify failure
