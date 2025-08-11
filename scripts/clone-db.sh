@@ -36,6 +36,7 @@ construct_suffix() {
     SUFFIX=$(echo "$CLEAN_NAME" | cut -c1-20)
     echo "SUFFIX=$SUFFIX" >> $GITHUB_ENV
     echo FULL_DB_NAME="${SOURCE_DB_NAME}-${SUFFIX}" >> $GITHUB_ENV
+    echo "DB Name constructed"
 }
 
 clone_database() {
