@@ -39,8 +39,7 @@ jobs:
         run: |
             for f in stored_procedures/*.sql; do
                 cat "$f"
-                echo "-- End of $f"
-                echo "" 
+                echo -e "\n-- End of $f\n"
             done > stored_procedures/combined.sql
 
       - name: Execute SQL Scripts
