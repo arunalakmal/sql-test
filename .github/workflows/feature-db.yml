@@ -28,7 +28,7 @@ jobs:
             UPDATED_CONN_STR=$(echo "${{ secrets.AZURE_SQL_CONNECTION_STRING }}" | sed -E "s/(Initial Catalog=)[^;]+/\1${FULL_DB_NAME}/")
             echo "UPDATED_CONN_STR=$UPDATED_CONN_STR" >> $GITHUB_ENV
 
-      - name: Execute SQL Scripts
+      - name: Prepare SQL Scripts for exection
         run: |
             for f in stored_procedures/*.sql; do
                 cat "$f"
