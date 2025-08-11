@@ -37,7 +37,11 @@ jobs:
 
       - name: Execute SQL Scripts
         run: |
-            cat stored_procedures/*.sql > stored_procedures/combined.sql
+            for f in *.sql; do
+                cat "$f"
+                echo "-- End of $f"
+                echo "" 
+            done > combined.sql
 
       - name: Execute SQL Scripts
         uses: azure/sql-action@v2.3
