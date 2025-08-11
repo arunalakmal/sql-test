@@ -35,12 +35,16 @@ construct_suffix() {
     CLEAN_NAME=$(echo "$CLEAN_NAME" | tr '/_' '-' | tr '[:upper:]' '[:lower:]')
     SUFFIX=$(echo "$CLEAN_NAME" | cut -c1-20)
     echo "SUFFIX=$SUFFIX" >> $GITHUB_ENV
+    FULL_DB_NAME=${SOURCE_DB_NAME}-${SUFFIX}
+    echo "FULL_DB_NAME=${FULL_DB_NAME}" >> $GITHUB_ENV
+    
+    log "INFO" "DB Name constructed: ${FULL_DB_NAME:-}"
 }
 
 clone_database() {
     construct_suffix
     
-    log "INFO" "Cloning database ${SOURCE_DB_NAME} to ${SOURCE_DB_NAME}-${SUFFIX} on server ${SERVER_NAME}"
+    log "INFO" "Cloning database ${SOURCE_DB_NAME} to ${FULL_DB_NAME} on server ${SERVER_NAME}"
 
     if [[ "$DRY_RUN" == "true" ]]; then
         log "INFO" "Dry run mode enabled. No changes will be made this time, without DRY RUN mode database ${SOURCE_DB_NAME} will be cloned."
@@ -49,33 +53,33 @@ clone_database() {
         log "INFO" "Executing database clonning process..."
         log "INFO" "Please wait! this process will take a while..."
 
-        az sql db copy --dest-name ${SOURCE_DB_NAME}-${SUFFIX} \
+        az sql db copy --dest-name ${FULL_DB_NAME} \
         --name ${SOURCE_DB_NAME} \
         --resource-group ${RESOURCE_GROUP} \
         --server ${SERVER_NAME} \
         --dest-resource-group ${RESOURCE_GROUP} \
         --dest-server ${SERVER_NAME} > /dev/null 2>&1
 
-        log "INFO" "Database ${SOURCE_DB_NAME} cloned to ${SOURCE_DB_NAME}-${SUFFIX} on server ${SERVER_NAME} successfully."
+        log "INFO" "Database ${SOURCE_DB_NAME} cloned to ${FULL_DB_NAME} on server ${SERVER_NAME} successfully."
     fi
 }
 
 delete_clone() {
     construct_suffix
-    log "INFO" "Deleting cloned database ${SOURCE_DB_NAME}-${SUFFIX}"
+    log "INFO" "Deleting cloned database ${FULL_DB_NAME}"
 
     if [[ "$DRY_RUN" == "true" ]]; then
-        log "INFO" "Dry run mode enabled. No changes will be made this time, without DRY RUN mode database ${SOURCE_DB_NAME}-${SUFFIX} will be deleted."
+        log "INFO" "Dry run mode enabled. No changes will be made this time, without DRY RUN mode database ${FULL_DB_NAME} will be deleted."
         return
     else
         log "INFO" "Executing database deletion process..."
         log "INFO" "Please wait! this process will take a while..."
         
-        az sql db delete --name ${SOURCE_DB_NAME}-${SUFFIX} \
+        az sql db delete --name ${FULL_DB_NAME} \
         --resource-group ${RESOURCE_GROUP} \
         --server ${SERVER_NAME} --yes > /dev/null 2>&1
 
-        log "INFO" "Database ${SOURCE_DB_NAME}-${SUFFIX} deleted from server ${SERVER_NAME}."
+        log "INFO" "Database ${FULL_DB_NAME} deleted from server ${SERVER_NAME}."
     fi
 }
 
