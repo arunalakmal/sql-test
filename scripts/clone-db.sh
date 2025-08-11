@@ -35,7 +35,8 @@ construct_suffix() {
     CLEAN_NAME=$(echo "$CLEAN_NAME" | tr '/_' '-' | tr '[:upper:]' '[:lower:]')
     SUFFIX=$(echo "$CLEAN_NAME" | cut -c1-20)
     echo "SUFFIX=$SUFFIX" >> $GITHUB_ENV
-    echo "FULL_DB_NAME=${SOURCE_DB_NAME}-${SUFFIX}" >> $GITHUB_ENV
+    FULL_DB_NAME=${SOURCE_DB_NAME}-${SUFFIX}
+    echo "FULL_DB_NAME=${FULL_DB_NAME}" >> $GITHUB_ENV
     echo "DB name constructed ${FULL_DN_NAME}"
     log "INFO" "DB Name constructed: ${FULL_DB_NAME:-}"
 }
