@@ -43,7 +43,7 @@ construct_suffix() {
 
 clone_database() {
     construct_suffix
-    log "INFO" "Checking if database ${FULL_DB_NAME} exists... on server ${SERVER_NAME}"
+    log "INFO" "Checking if database ${FULL_DB_NAME} exists on server ${SERVER_NAME}"
     if az sql db show \
         --name ${FULL_DB_NAME} \
         --server ${SERVER_NAME} \
