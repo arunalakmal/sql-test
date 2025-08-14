@@ -50,7 +50,7 @@ clone_database() {
         --resource-group ${RESOURCE_GROUP} \
         --query "name" -o tsv 2>/dev/null)
 
-    if [[ -n "$EXISTING_DB" && "$EXISTING_DB" == "$FULL_DB_NAME ]]; then
+    if [[ -n "$EXISTING_DB" && "$EXISTING_DB" == "$FULL_DB_NAME" ]]; then
         log "INFO" "Database ${FULL_DB_NAME} already exists on server ${SERVER_NAME}. DB Cloning process will be skipped."
     else
         log "INFO" "Cloning database ${SOURCE_DB_NAME} to ${FULL_DB_NAME} on server ${SERVER_NAME}"
