@@ -44,13 +44,12 @@ construct_suffix() {
 clone_database() {
     construct_suffix
     log "INFO" "Checking if database ${FULL_DB_NAME} exists... on server ${SERVER_NAME}"
-    EXISTING_DB=$(az sql db show \
+    if az sql db show \
         --name ${FULL_DB_NAME} \
         --server ${SERVER_NAME} \
         --resource-group ${RESOURCE_GROUP} \
-        --query "name" -o tsv 2>/dev/null)
-
-    if [[ -n "$EXISTING_DB" && "$EXISTING_DB" == "$FULL_DB_NAME" ]]; then
+        --query "name" -o tsv >/dev/null 2>&1; then
+        
         log "INFO" "Database ${FULL_DB_NAME} already exists on server ${SERVER_NAME}. DB Cloning process will be skipped."
     else
         log "INFO" "Cloning database ${SOURCE_DB_NAME} to ${FULL_DB_NAME} on server ${SERVER_NAME}"
