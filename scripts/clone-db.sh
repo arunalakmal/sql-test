@@ -49,8 +49,8 @@ clone_database() {
         --server ${SERVER_NAME} \
         --resource-group ${RESOURCE_GROUP} \
         --query "name" -o tsv >/dev/null 2>&1; then
-        
-        log "INFO" "Database ${FULL_DB_NAME} already exists on server ${SERVER_NAME}. DB Cloning process will be skipped."
+
+        log "INFO" "Database ${FULL_DB_NAME} already exists on server ${SERVER_NAME}. DB Cloning process will be skipped and continue."
     else
         log "INFO" "Cloning database ${SOURCE_DB_NAME} to ${FULL_DB_NAME} on server ${SERVER_NAME}"
 
