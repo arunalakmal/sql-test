@@ -38,7 +38,7 @@ construct_suffix() {
     FULL_DB_NAME=${SOURCE_DB_NAME}-${SUFFIX}
     echo "FULL_DB_NAME=${FULL_DB_NAME}" >> $GITHUB_ENV
     
-    log "INFO" "New Database is: ${FULL_DB_NAME:-}"
+    log "INFO" "Database is: ${FULL_DB_NAME:-}"
 }
 
 clone_database() {
