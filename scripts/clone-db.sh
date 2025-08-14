@@ -43,24 +43,33 @@ construct_suffix() {
 
 clone_database() {
     construct_suffix
-    
-    log "INFO" "Cloning database ${SOURCE_DB_NAME} to ${FULL_DB_NAME} on server ${SERVER_NAME}"
-
-    if [[ "$DRY_RUN" == "true" ]]; then
-        log "INFO" "Dry run mode enabled. No changes will be made this time, without DRY RUN mode database ${SOURCE_DB_NAME} will be cloned."
-        return
-    else
-        log "INFO" "Executing database clonning process..."
-        log "INFO" "Please wait! this process will take a while..."
-
-        az sql db copy --dest-name ${FULL_DB_NAME} \
-        --name ${SOURCE_DB_NAME} \
-        --resource-group ${RESOURCE_GROUP} \
+    log "INFO" "Checking if database ${FULL_DB_NAME} exists... on server ${SERVER_NAME}"
+    if az sql db show \
+        --name ${FULL_DB_NAME} \
         --server ${SERVER_NAME} \
-        --dest-resource-group ${RESOURCE_GROUP} \
-        --dest-server ${SERVER_NAME} > /dev/null 2>&1
+        --resource-group ${RESOURCE_GROUP} \
+        --query "name" -o tsv >/dev/null 2>&1; then
 
-        log "INFO" "Database ${SOURCE_DB_NAME} cloned to ${FULL_DB_NAME} on server ${SERVER_NAME} successfully."
+        log "INFO" "Database ${FULL_DB_NAME} already exists on server ${SERVER_NAME}. DB Cloning process will be skipped and continue."
+    else
+        log "INFO" "Cloning database ${SOURCE_DB_NAME} to ${FULL_DB_NAME} on server ${SERVER_NAME}"
+
+        if [[ "$DRY_RUN" == "true" ]]; then
+            log "INFO" "Dry run mode enabled. No changes will be made this time, without DRY RUN mode database ${SOURCE_DB_NAME} will be cloned."
+            return
+        else
+            log "INFO" "Executing database clonning process..."
+            log "INFO" "Please wait! this process will take a while..."
+
+            az sql db copy --dest-name ${FULL_DB_NAME} \
+            --name ${SOURCE_DB_NAME} \
+            --resource-group ${RESOURCE_GROUP} \
+            --server ${SERVER_NAME} \
+            --dest-resource-group ${RESOURCE_GROUP} \
+            --dest-server ${SERVER_NAME} > /dev/null 2>&1
+
+            log "INFO" "Database ${SOURCE_DB_NAME} cloned to ${FULL_DB_NAME} on server ${SERVER_NAME} successfully."
+        fi
     fi
 }
 
